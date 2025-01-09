@@ -9,11 +9,12 @@ const Sidebar = ({user}) => {
 	return (
 		<aside className="main-sidebar sidebar-dark-primary elevation-4">
 			{/* <!-- Brand Logo --> */}
-			<a
-				href="index3.html"
+			<NavLink
+			to="/dashboard"
+			end
 				className="brand-link text-center">
 				<span className="brand-text font-weight-bold">Notance</span>
-			</a>
+			</NavLink>
 
 			{/* <!-- Sidebar --> */}
 			<div className="sidebar">
