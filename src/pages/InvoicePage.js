@@ -1,59 +1,66 @@
-
 import React, { useEffect, useState } from 'react';
 import $ from 'jquery';
 import DataTable from 'datatables.net-responsive-bs5';
-import 'datatables.net-buttons-bs5'
-import 'datatables.net-bs5'
+import 'datatables.net-buttons-bs5';
+import 'datatables.net-bs5';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-buttons/js/buttons.print.mjs';
+import { forEach } from 'jszip';
 
 const InvoicePage = () => {
 	const [data, setData] = useState(null);
-	const [dataWithoutFilter, setDataWithoutFilter] = useState(null);
-	const [pagination, setPagination] = useState(null);
 	const [loading, setLoading] = useState(true); // State for loading status
 	const [error, setError] = useState(null);
-	const [page, setPage] = useState(1);
-	const [size, setSize] = useState(5);
 	const [category, setCategory] = useState(null);
 	const [type, setType] = useState(null);
 	const [date, setDate] = useState(null);
-	const [searchItem, setSearchItem] = useState(null);
-	const [categoryList,setCategoryList] = useState(null);
-	let totalPrice = 0;
+	const [categoryList, setCategoryList] = useState(null);
+	const [addInvoiceFormData,setAddInvoiceFormData] = useState({
+		name: '',
+		quantity: '',
+		totalPrice: '',
+		category: '',
+		type: 'EARNING',
+		location: '',
+		date: '',
+		note: ''
+	})
+	let totalEarning = 0;
+	let totalSpending = 0;
+
+	const changeNumberFormat = (number) => {
+		const formattedNumber = number.toLocaleString('id-ID');
+
+		return `Rp ${formattedNumber}`;
+	};
+
 	useEffect(() => {
-		// const datatableCSS = document.createElement('link');
-		// datatableCSS.rel = "stylesheet"
-		// datatableCSS.href = "https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.2.0/b-colvis-3.2.0/b-html5-3.2.0/b-print-3.2.0/r-3.0.3/datatables.min.css"
-		// const datatableJS = document.createElement('script');
-		// datatableJS.src = './'
-		// datatableJS.async = true;
-		const jsZip = document.createElement('script');
-		jsZip.src =
+		const jsZipScript = document.createElement('script');
+		jsZipScript.src =
 			'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-		jsZip.async = true;
-		const vfsFont = document.createElement('script');
-		vfsFont.src =
-			'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js';
-		vfsFont.async = true;
+		jsZipScript.async = true;
+		document.head.appendChild(jsZipScript);
+
 		const pdfScript = document.createElement('script');
 		pdfScript.src =
 			'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js';
 		pdfScript.async = true;
 		document.head.appendChild(pdfScript);
-		document.head.appendChild(vfsFont);
-		document.head.appendChild(jsZip);
-		// document.head.appendChild(datatableCSS)
-		// document.head.appendChild(datatableJS)
+
+		const vfsFontScript = document.createElement('script');
+		vfsFontScript.src =
+			'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js';
+		vfsFontScript.async = true;
+		document.head.appendChild(vfsFontScript);
 		return () => {
+			// Cleanup the scripts if needed
+			document.head.removeChild(jsZipScript);
 			document.head.removeChild(pdfScript);
-			document.head.removeChild(vfsFont);
-			document.head.removeChild(jsZip);
-			// document.head.removeChild(datatableCSS)
-			// document.head.removeChild(datatableJS)
+			document.head.removeChild(vfsFontScript);
 		};
-	},[]);
+	}, []);
+
 	const fetchData = async () => {
 		const url = new URL(
 			`${process.env.REACT_APP_API_URL}/api/item/getAccountItemWithoutPagination`
@@ -62,8 +69,6 @@ const InvoicePage = () => {
 		if (category != null) params.append('category', category);
 		if (type != null) params.append('type', type);
 		if (date != null) params.append('date', date);
-		// if (page != null) params.append('page', page);
-		// if (size != null) params.append('size', size);
 		url.search = params.toString();
 		try {
 			let response = await fetch(url, {
@@ -75,13 +80,15 @@ const InvoicePage = () => {
 			}
 			let result = await response.json(); // Parse JSON
 			setData(result.data);
-			
-			response = await fetch(`${process.env.REACT_APP_API_URL}/api/x-item/categories`);
+
+			response = await fetch(
+				`${process.env.REACT_APP_API_URL}/api/x-item/category`
+			);
 			if (!response.ok) {
 				throw new Error('Network response was not ok');
 			}
 			result = await response.json();
-			setCategoryList(result.data); 
+			setCategoryList(result.data);
 			// setDataWithoutFilter(result.data);
 			// setPagination(result.pagination);
 		} catch (error) {
@@ -91,70 +98,136 @@ const InvoicePage = () => {
 		}
 	};
 	useEffect(() => {
+		setLoading(true);
 		fetchData();
-	}, [page, size, type, date, category]);
-	const changeNumberFormat = (number) => {
-		const formattedNumber = number.toLocaleString('id-ID');
+	}, [type, date, category]);
 
-		return `Rp ${formattedNumber}`;
-	};
-	// useEffect(() => {
-	// 	if (searchItem == '' || searchItem == null) {
-	// 		setData(dataWithoutFilter);
-	// 	} else {
-	// 		const lowercasedSearch = searchItem.toLowerCase();
-	// 		const filtered = data.filter((item) =>
-	// 			item.name.toLowerCase().includes(lowercasedSearch)
-	// 		);
-	// 		setData(filtered);
-	// 	}
-	// }, [searchItem]);
-	
 	useEffect(() => {
-		if(categoryList){
-			$("#myTable").DataTable({
-				lengthChange:false,
-				autoWidth:false,
-				layout:{
-					topStart:{
-						buttons:[{
-							'extend':'copy',
-							'title' : 'Notance_Report'
-						},{
-							'extend' : 'pdf',
-							'title' : 'Notance_Report'
-						},{
-							'extend' : 'excel',
-							'title' : 'Notance_Report'
-						},{
-							'extend' : 'csv',
-							'title' : 'Notance_Report'
-						}],
-						div:{
-							html:`	
-								<div>
-									<label>Category</label>
-									<select class="form-select" aria-label="Default select example">
-										<option selected>All</option>
-										${console.log(categoryList)}
-										${categoryList.map((category,i)=> {
-											console.log(category)
-											return (
-												`<option key=${i} value=${category}>${category}</option>`
-											);
-										})}
-									</select>
+		if (categoryList && !$.fn.dataTable.isDataTable('#myTable')) {
+			new DataTable('#myTable', {
+				destroy: true,
+				lengthChange: false,
+				autoWidth: false,
+				columnDefs: [
+					{
+						targets: 7,
+						defaultContent: '-',
+						target: '_all',
+					},
+				],
+				layout: {
+					topStart: {
+						buttons: [
+							{
+								extend: 'copy',
+								title: 'Notance_Report',
+							},
+							{
+								extend: 'pdf',
+								title: 'Notance_Report',
+							},
+							{
+								extend: 'excel',
+								title: 'Notance_Report',
+							},
+							{
+								extend: 'csv',
+								title: 'Notance_Report',
+							},
+						],
+
+						div: {
+							html: `	
+								<div class="d-flex container">
+									<div class="filterCategory">
+										<label>Category</label>
+									</div>
+									<div class="filterType mx-2">
+										<label>Type</label>
+									</div>
+									<div class="resetFilter mx-2 d-flex">
+										
+									</div>
 								</div>		
 								`,
-							className : "dt-buttons btn-group flex-wrap mx-4"
-						}
-					}
+							className: 'dt-buttons btn-group flex-wrap mx-4',
+						},
+					},
 				},
-				destroy:true
-			})
+				initComplete: function () {
+					const categorySelect = $(
+						'<select id="categorySelect" class="form-select"><option value="All" selected>All</option></select>'
+					)
+						.appendTo('.filterCategory') // Append to the DataTable wrapper
+						.on('change', function () {
+							const selectedCategory = $(this).val();
+							setCategory(selectedCategory); // React state update for category
+						});
+					categoryList.forEach((cat) => {
+						categorySelect.append(
+							`<option value="${cat}" ${
+								category == cat ? 'selected' : ''
+							}>${cat}</option>`
+						);
+					});
+
+					const typeSelect = $(
+						'<select id="typeSelect" class="form-select"><option value="All" selected>All</option></select>'
+					)
+						.appendTo('.filterType') // Append to the DataTable wrapper
+						.on('change', function () {
+							const selectedType = $(this).val();
+							setType(selectedType); // React state update for category
+						});
+					typeSelect.append(
+						`<option value="EARNING" ${
+							type == 'EARNING' ? 'selected' : ''
+						}>EARNING</option>`
+					);
+					typeSelect.append(
+						`<option value="SPENDING" ${
+							type == 'SPENDING' ? 'selected' : ''
+						}>SPENDING</option>`
+					);
+					const resetFilter = $('<button>Reset</button>')
+						.appendTo('.resetFilter')
+						.on('click', function () {
+							setCategory(null);
+							setType(null);
+						});
+				},
+			});
 		}
-	  }, [data,categoryList]);
+	}, [categoryList]);
+	const handleAddInvoiceChange = (e) => {
+		const { name, value } = e.target;
+		setAddInvoiceFormData({
+		  ...addInvoiceFormData,
+		  [name]: value,
+		});
+	  };
+	const addInvoice = async () => {
+		try {
+			const response = await fetch('/api/item/create', {
+			  method: 'POST',
+			  headers: {
+				'Content-Type': 'application/json',
+			  },
+			  credentials:'include',
+			  body: JSON.stringify(addInvoiceFormData),
+			});
 	  
+			if (response.ok) {
+			  const data = await response.json();
+			  console.log('Invoice added successfully:', data);
+			  // Optionally, you can clear the form or display a success message
+			} else {
+			  console.error('Error adding invoice');
+			}
+		  } catch (error) {
+			console.error('Error submitting the form:', error);
+		  }
+	}
 	if (loading)
 		return (
 			<div className="content-wrapper d-flex justify-content-center flex-column align-items-center">
@@ -169,203 +242,122 @@ const InvoicePage = () => {
 		<div
 			className="content-wrapper px-4 py-2"
 			style={{ overflowY: 'auto', maxHeight: '0vh' }}>
-			
+			{console.log(data)}
 			<div className="card">
 				<div className="card-header">
 					<h3 className="card-title">DataTable with default features</h3>
 				</div>
 				{/* <!-- /.card-header --> */}
 				<div className="card-body">
-				<table
-							id="myTable"
-							className="table table-bordered table-striped">
-							<thead>
-								<tr className="border-5">
-									<th data-priority="1">Name</th>
-									<th data-priority="2">Quantity</th>
-									<th>Category</th>
-									<th>Type</th>
-									<th>Date</th>
-									<th data-priority="3">Total Price</th>
-									<th>Note</th>
-									<th>Action</th>
-								</tr>
-							</thead>
-							<tbody>
-								{data.map((item, i) => {
-									totalPrice = totalPrice+ parseInt(item.totalPrice);
-									return (
-										<tr key={i}>
-											<td style={{width:'fit-content'}}>{item.name}</td>
-											<td>{item.quantity}</td>
-											<td>{item.category}</td>
-											<td>{item.type}</td>
-											<td>{item.date}</td>
-											<td>{changeNumberFormat(item.totalPrice)}</td>
-											<td>{item.note}</td>
-											<td>action</td>
-										</tr>
-									);
-								})}
-							</tbody>
-							<tfoot>
-								<tr>
-									<th colSpan={5}>TOTAL</th>
-									<th colSpan={3}>{changeNumberFormat(totalPrice)}</th>
-								</tr>
-							</tfoot>
-						</table>
-						
-						
-						{/* <table
-							id="example1"
-							className="table table-bordered table-striped"
-							width="100%">
-							<thead>
-								<tr className="border-5">
-									<th>Name</th>
-									<th>Quantity</th>
-									<th>Category</th>
-									<th>Type</th>
-									<th>Date</th>
-									<th>Total Price</th>
-									<th>Note</th>
-									<th>Action</th>
-								</tr>
-							</thead>
-							<tbody>
-								{data.map((item, i) => {
-									return (
-										<tr key={i}>
-											<td>{item.name}</td>
-											<td>{item.quantity}</td>
-											<td>{item.category}</td>
-											<td>{item.type}</td>
-											<td>{item.date}</td>
-											<td>{changeNumberFormat(item.totalPrice)}</td>
-											<td>{item.note}</td>
-											<td>action</td>
-										</tr>
-									);
-								})}
-							</tbody>
-							<tfoot>
-								<tr>
-									<th colSpan={5}>TOTAL</th>
-									<th colSpan={3}>28392893</th>
-								</tr>
-							</tfoot>
-						</table>
-						<div className="d-flex justify-content-end align-items-center px-3">
-							<Pagination className="mx-5 my-0">
-								<Pagination.First
-									disabled={page === 1}
-									onClick={() => {
-										setPage(1);
-									}}
-								/>
-								<Pagination.Prev
-									disabled={page === 1}
-									onClick={() => {
-										setPage(page - 1);
-									}}
-								/>
-								{page - 2 > 0 && (
-									<Pagination.Item
-										onClick={() => {
-											setPage(page - 2);
-										}}>
-										{page - 2}
-									</Pagination.Item>
-								)}
-								{page - 1 > 0 && (
-									<Pagination.Item
-										onClick={() => {
-											setPage(page - 1);
-										}}>
-										{page - 1}
-									</Pagination.Item>
-								)}
-								<Pagination.Item active>{page}</Pagination.Item>
-								{page + 1 <= pagination.totalPage && (
-									<Pagination.Item
-										onClick={() => {
-											setPage(page + 1);
-										}}>
-										{page + 1}
-									</Pagination.Item>
-								)}
-								{page + 2 <= pagination.totalPage && (
-									<Pagination.Item
-										onClick={() => {
-											setPage(page + 2);
-										}}>
-										{page + 2}
-									</Pagination.Item>
-								)}
-								<Pagination.Next
-									disabled={page === pagination.totalPage}
-									onClick={() => {
-										setPage(page + 1);
-									}}
-								/>
-								<Pagination.Last
-									disabled={page === pagination.totalPage}
-									onClick={() => {
-										setPage(pagination.totalPage);
-									}}
-								/>
-							</Pagination>
-							<div className="dropdown-pagination d-flex align-items-center">
-								<p className="m-0 pr-2">Item per page</p>
-								<Dropdown>
-									<Dropdown.Toggle
-										variant="secondary"
-										id="dropdown-basic">
-										{size}
-									</Dropdown.Toggle>
-
-									<Dropdown.Menu>
-										{size != 5 && (
-											<Dropdown.Item
-												onClick={() => {
-													setSize(5);
-													setPage(1);
-												}}>
-												5
-											</Dropdown.Item>
-										)}
-										{size != 10 && (
-											<Dropdown.Item
-												onClick={() => {
-													setSize(10);
-													setPage(1);
-												}}>
-												10
-											</Dropdown.Item>
-										)}
-										{size != 50 && (
-											<Dropdown.Item
-												onClick={() => {
-													setSize(50);
-													setPage(1);
-												}}>
-												50
-											</Dropdown.Item>
-										)}
-										{size != 100 && (
-											<Dropdown.Item
-												onClick={() => {
-													setSize(100);
-													setPage(1);
-												}}>
-												100
-											</Dropdown.Item>
-										)}
-									</Dropdown.Menu>
-								</Dropdown>
-							</div>
-						</div> */}
+					<div className="modal fade" id="addInvoiceModal" tabIndex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style={{display: 'none'}} aria-hidden="true">
+						<div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+							<form className="modal-content">
+								<div className="modal-header">
+									<h5 className="modal-title" id="exampleModalCenteredScrollableTitle">Add invoice</h5>
+									<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div className="modal-body">
+									<div class="mb-3">
+										<label class="form-label">Item name*</label>
+										<input type="text" name='name' required class="form-control" id="itemName" aria-describedby="itemName" onChange={handleAddInvoiceChange}/>
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Quantity*</label>
+										<input type="number" name='quantity' required class="form-control" id="quantity" onChange={handleAddInvoiceChange}/>
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Total item price (Rp)*</label>
+										<input type="number" name='totalPrice' required class="form-control" id="totalPrice" onChange={handleAddInvoiceChange}/>
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Category*</label>
+										<select className='form-select' name='category' onChange={handleAddInvoiceChange}>
+											{categoryList.map((cat,i) => {
+												return (<option value={cat}>{cat}</option>)
+											})}
+										</select>
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Item type*</label>
+										<select className='form-select' name='type' onChange={handleAddInvoiceChange}>
+											<option value="EARNING">EARNING</option>
+											<option value="SPENDING">SPENDING</option>
+										</select>
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Location</label>
+										<input type="text" name='location' class="form-control" id="location" aria-describedby="location" onChange={handleAddInvoiceChange}/>
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Date</label>
+										<input type="date" name='date' class="form-control" id="date" aria-describedby="date" onChange={handleAddInvoiceChange}/>
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Note</label>
+										<textarea class="form-control" name='note' id="note" aria-describedby="note" onChange={handleAddInvoiceChange}/>
+									</div>
+								</div>
+								<div className="modal-footer">
+									<button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+									<button type="button" className="btn btn-primary" onClick={addInvoice}>Add Invoice</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div>
+						<button
+							type="button"
+							className="btn btn-primary"
+							data-bs-toggle="modal"
+							data-bs-target="#addInvoiceModal">
+							Add Invoice
+						</button>
+					</div>
+					<table
+						id="myTable"
+						className="table table-bordered table-striped">
+						<thead>
+							<tr className="border-5">
+								<th data-priority="1">Name</th>
+								<th data-priority="2">Quantity</th>
+								<th>Category</th>
+								<th>Type</th>
+								<th>Date</th>
+								<th data-priority="3">Total Price</th>
+								<th>Note</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{data.map((item, i) => {
+								if (item.type == 'SPENDING') {
+									totalSpending = totalSpending + parseInt(item.totalPrice);
+								} else {
+									totalEarning = totalEarning + parseInt(item.totalPrice);
+								}
+								return (
+									<tr key={i}>
+										<td style={{ width: 'fit-content' }}>{item.name}</td>
+										<td>{item.quantity}</td>
+										<td>{item.category}</td>
+										<td>{item.type}</td>
+										<td>{item.date}</td>
+										<td>{changeNumberFormat(item.totalPrice)}</td>
+										<td>{item.note}</td>
+										<td>action</td>
+									</tr>
+								);
+							})}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th colSpan={3}>TOTAL SPENDING</th>
+								<th colSpan={1}>{changeNumberFormat(totalSpending)}</th>
+								<th colSpan={3}>TOTAL EARNING</th>
+								<th colSpan={1}>{changeNumberFormat(totalEarning)}</th>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
 				{/* <!-- /.card-body --> */}
 			</div>

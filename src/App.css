@@ -25,9 +25,12 @@
     overflow-x: auto;
   }
 }
-/* response = await fetch(`${process.env.REACT_APP_API_URL}/api/x-item/categories`);
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
-			}
-			result = await response.json();
-			setCategoryList(result); */
+
+@media screen and (max-width: 991px) {
+  .main-sidebar{
+    margin-left: -250px;
+  }
+}
+.dt-empty{
+  text-align: center;
+}

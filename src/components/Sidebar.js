@@ -1,11 +1,22 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import store from '../store/store';
 import { use, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { clear } from '../store/reducers/ui';
+import { logout } from '../store/reducers/auth';
 
 const Sidebar = ({user}) => {
 	const date = useSelector((state) => state.ui.date);
 	const time = useSelector((state) => state.ui.time);
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const loggedout = () => {
+		localStorage.removeItem("account")
+		localStorage.removeItem("expiredTime")
+		dispatch(clear())
+		dispatch(logout())
+		navigate("/")
+	}
 	return (
 		<aside className="main-sidebar sidebar-dark-primary elevation-4">
 			{/* <!-- Brand Logo --> */}
@@ -89,7 +100,7 @@ const Sidebar = ({user}) => {
                                 >
 								<p>Logout</p>
 							</NavLink> */}
-							<button className='btn btn-info w-100'>
+							<button className='btn btn-info w-100' onClick={loggedout}>
 								Logout
 							</button>
 						</li>

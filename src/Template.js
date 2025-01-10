@@ -14,8 +14,9 @@ const Template = ({ Content }) => {
 	const navigate = useNavigate();
 	const getUser = () => {
 		// const jsonUser = JSON.stringify(store.getState().auth.currentUser);
-		const jsonUser = JSON.parse(store.getState().auth.currentUser);
-		setUser(jsonUser)
+		// console.log(store.getState().auth.currentUser)
+		// const jsonUser = JSON.parse(store.getState().auth.currentUser);
+		setUser(store.getState().auth.currentUser)
 	}
 	const checkSession = () => {
 		const currentTime = new Date();

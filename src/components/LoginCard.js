@@ -60,8 +60,8 @@ const LoginCard = () => {
 				if(accResponse.ok){
 					localStorage.setItem("account",JSON.stringify(accData.data))
 					dispatch(login(accData.data))
-					console.log("Logged in", store.getState());
-					console.log(localStorage.getItem("account"));
+					// console.log("Logged in", store.getState());
+					// console.log(localStorage.getItem("account"));
 					navigate('/dashboard');
 				}
 			} else {
