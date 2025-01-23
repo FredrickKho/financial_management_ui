@@ -9,25 +9,26 @@ import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
 import store from './store/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { login,logout, setExpired, setLoading } from './store/reducers/auth';
+import { login, logout, setExpired, setLoading } from './store/reducers/auth';
+import Register from './pages/RegisterPage';
 
 function App() {
-	const currentUser = useSelector(state => state.auth.currentUser);
+	const currentUser = useSelector((state) => state.auth.currentUser);
 	const dispatch = useDispatch();
-	useEffect(()=>{
+	useEffect(() => {
 		const savedAccount = localStorage.getItem('account');
-        const savedExpiredTime = localStorage.getItem('expiredTime');
-        dispatch(setLoading(true));
-        if (savedAccount) {
-            dispatch(login(savedAccount)); // Load user data from localStorage
-        }
+		const savedExpiredTime = localStorage.getItem('expiredTime');
+		dispatch(setLoading(true));
+		if (savedAccount) {
+			dispatch(login(savedAccount)); // Load user data from localStorage
+		}
 
-        if (savedExpiredTime) {
-            dispatch(setExpired(savedExpiredTime)); // Set the session expiry time
-        }
+		if (savedExpiredTime) {
+			dispatch(setExpired(savedExpiredTime)); // Set the session expiry time
+		}
 		dispatch(setLoading(false));
-    },[dispatch])
-	
+	}, [dispatch]);
+
 	return (
 		<Routes>
 			<Route element={<PrivateRoute />}>
@@ -45,6 +46,10 @@ function App() {
 				<Route
 					path="/"
 					element={<LoginPage />}
+				/>
+				<Route
+					path="/register"
+					element={<Register />}
 				/>
 			</Route>
 		</Routes>

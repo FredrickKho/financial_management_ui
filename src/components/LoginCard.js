@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { login, setExpired } from '../store/reducers/auth';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import store from '../store/store';
 const LoginCard = () => {
 	useEffect(() => {
@@ -44,26 +44,10 @@ const LoginCard = () => {
 			if (authResponse.ok) {
 				localStorage.setItem("expiredTime",authData.data.expiredTime)
 				dispatch(setExpired(authData.data.expiredTime))
-				const token = authData.data.token;
-				const accResponse = await fetch(
-					`${process.env.REACT_APP_API_URL}/api/account/getAccountDetails`,
-					{
-						method: 'GET',
-						headers: {
-							'Content-Type': 'application/json',
-							'authorization': `Bearer ${token}`,
-						},
-						credentials:'include'
-					}
-				)
-				const accData = await accResponse.json();
-				if(accResponse.ok){
-					localStorage.setItem("account",JSON.stringify(accData.data))
-					dispatch(login(accData.data))
-					// console.log("Logged in", store.getState());
-					// console.log(localStorage.getItem("account"));
-					navigate('/dashboard');
-				}
+				localStorage.setItem("account",email)
+				dispatch(login(email))
+				navigate('/dashboard');
+
 			} else {
 				window.toastr.error(authData.errors)
 			}	
@@ -121,11 +105,12 @@ const LoginCard = () => {
 
 				<div className="social-auth-links text-center mb-3">
 					<p>- OR -</p>
-					<a
-						href="#"
+					<NavLink
+						to={"/register"}
+						end
 						className="btn btn-block btn-primary">
 						Register Here
-					</a>
+					</NavLink>
 				</div>
 				<p className="mb-1">
 					<a href="forgot-password.html">I forgot my password</a>

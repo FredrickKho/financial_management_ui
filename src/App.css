@@ -25,12 +25,51 @@
     overflow-x: auto;
   }
 }
-
-@media screen and (max-width: 991px) {
+@media screen and (max-width:628px){
+  /* #myTable{
+    display: block;
+    overflow-x: auto;
+  } */
+   td, p, button, a, span, div{
+    font-size: small !important;
+   }
+  .tableFilter{
+    flex-direction: column;
+    width: 100%;
+  }
+  .dt-buttons{
+    margin: 0 !important;
+    width: 100%;
+  }
+  .tableFilter > * {
+    margin: 0 !important;
+    width: 100%;
+  }
+  .resetFilter{
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    display: block !important;
+  }
+  .resetFilter button{
+    width: 100%;
+  }
+}
+/* @media screen and (max-width: 991px) {
   .main-sidebar{
     margin-left: -250px;
   }
-}
+} */
 .dt-empty{
   text-align: center;
+}
+.register-box{
+  width: fit-content;
+}
+.register-card{
+  min-height: fit-content !important;
+}
+td:not(:has(button)){
+  word-wrap: break-word; 
+  word-break: break-all; 
+  white-space: normal;
 }

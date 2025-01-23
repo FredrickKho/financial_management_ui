@@ -12,11 +12,29 @@ const Template = ({ Content }) => {
 	const [user,setUser] = useState(null);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const getUser = () => {
-		// const jsonUser = JSON.stringify(store.getState().auth.currentUser);
-		// console.log(store.getState().auth.currentUser)
-		// const jsonUser = JSON.parse(store.getState().auth.currentUser);
-		setUser(store.getState().auth.currentUser)
+	const [loading, setLoading] = useState(true);
+	const getUser = async () => {
+		try {
+			const accResponse = await fetch(
+				`${process.env.REACT_APP_API_URL}/api/account/getAccountDetails`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					credentials:'include'
+				}
+			)
+			const accData = await accResponse.json();
+			if(accResponse.ok){
+				setUser(accData.data)
+				// console.log(accData.data)
+			}
+		} catch (error) {
+			
+		} finally{
+			setLoading(false)
+		}
 	}
 	const checkSession = () => {
 		const currentTime = new Date();
@@ -63,12 +81,13 @@ const Template = ({ Content }) => {
 	},[dispatch])
 
 	useEffect(()=>{
+		setLoading(true)
 		getUser();
 		// console.log(user)
 	},[])
 	const date = useSelector((state) => state.ui.date);
 	const time = useSelector((state) => state.ui.time);
-	if (!user || !date || !time) {
+	if (loading || !date || !time) {
 		// You can return a loading spinner or something else until the user is fetched
 		return (
 			<div className="content-wrapper d-flex justify-content-center flex-column align-items-center">
