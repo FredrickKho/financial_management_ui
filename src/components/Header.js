@@ -12,7 +12,7 @@ const Header = () => {
 						<i className="fas fa-bars"></i>
 					</a>
 				</li>
-				<li className="nav-item d-none d-sm-inline-block">
+				{/* <li className="nav-item d-none d-sm-inline-block">
 					<a
 						href="index3.html"
 						className="nav-link">
@@ -57,11 +57,11 @@ const Header = () => {
 							Contact
 						</a>
 					</div>
-				</li>
+				</li> */}
 			</ul>
 
 			{/* <!-- SEARCH FORM --> */}
-			<form className="form-inline ml-3">
+			{/* <form className="form-inline ml-3">
 				<div className="input-group input-group-sm">
 					<input
 						className="form-control form-control-navbar"
@@ -77,11 +77,10 @@ const Header = () => {
 						</button>
 					</div>
 				</div>
-			</form>
+			</form> */}
 
 			{/* <!-- Right navbar links --> */}
-			<ul className="navbar-nav ml-auto">
-				{/* <!-- Messages Dropdown Menu --> */}
+			{/* <ul className="navbar-nav ml-auto">
 				<li className="nav-item dropdown">
 					<a
 						className="nav-link"
@@ -94,7 +93,6 @@ const Header = () => {
 						<a
 							href="#"
 							className="dropdown-item">
-							{/* <!-- Message Start --> */}
 							<div className="media">
 								<img
 									alt="User Avatar"
@@ -113,13 +111,11 @@ const Header = () => {
 									</p>
 								</div>
 							</div>
-							{/* <!-- Message End --> */}
 						</a>
 						<div className="dropdown-divider"></div>
 						<a
 							href="#"
 							className="dropdown-item">
-							{/* <!-- Message Start --> */}
 							<div className="media">
 								<img
 									alt="User Avatar"
@@ -138,13 +134,11 @@ const Header = () => {
 									</p>
 								</div>
 							</div>
-							{/* <!-- Message End --> */}
 						</a>
 						<div className="dropdown-divider"></div>
 						<a
 							href="#"
 							className="dropdown-item">
-							{/* <!-- Message Start --> */}
 							<div className="media">
 								<img
 									alt="User Avatar"
@@ -163,7 +157,6 @@ const Header = () => {
 									</p>
 								</div>
 							</div>
-							{/* <!-- Message End --> */}
 						</a>
 						<div className="dropdown-divider"></div>
 						<a
@@ -173,7 +166,6 @@ const Header = () => {
 						</a>
 					</div>
 				</li>
-				{/* <!-- Notifications Dropdown Menu --> */}
 				<li className="nav-item dropdown">
 					<a
 						className="nav-link"
@@ -223,7 +215,7 @@ const Header = () => {
 						<i className="fas fa-th-large"></i>
 					</a>
 				</li>
-			</ul>
+			</ul> */}
 		</nav>
 	);
 };

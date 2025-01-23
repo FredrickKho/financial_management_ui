@@ -7,10 +7,9 @@ import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-buttons/js/buttons.print.mjs';
 import 'datatables.net-plugins/dataRender/ellipsis.mjs';
-import { forEach } from 'jszip';
-import { useNavigate } from 'react-router-dom';
 
 const InvoicePage = () => {
+	document.title="Nelvonce - Invoice"
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true); // State for loading status
 	const [error, setError] = useState(null);
@@ -20,7 +19,6 @@ const InvoicePage = () => {
 	const [startDate, setStartDate] = useState(null);
 	const [endDate, setEndDate] = useState(null);
 	const [categoryList, setCategoryList] = useState(null);
-	const [isFocus,setIsFocus] = useState(false);
 	const [invoice,setInvoice] = useState({
 		name: '',
 		quantity: '',
@@ -43,7 +41,6 @@ const InvoicePage = () => {
 	});
 	let totalEarning = 0;
 	let totalSpending = 0;
-	const navigate = useNavigate();
 	const changeNumberFormat = (number) => {
 		const formattedNumber = number.toLocaleString('id-ID');
 		return `Rp ${formattedNumber}`;
@@ -157,19 +154,19 @@ const InvoicePage = () => {
 						buttons: [
 							{
 								extend: 'copy',
-								title: 'Notance_Report',
+								title: 'Nelvonce_Report',
 							},
 							{
 								extend: 'pdf',
-								title: 'Notance_Report',
+								title: 'Nelvonce_Report',
 							},
 							{
 								extend: 'excel',
-								title: 'Notance_Report',
+								title: 'Nelvonce_Report',
 							},
 							{
 								extend: 'csv',
-								title: 'Notance_Report',
+								title: 'Nelvonce_Report',
 							},
 						],
 					},
@@ -245,7 +242,6 @@ const InvoicePage = () => {
 			);
 
 			if (response.ok) {
-				const data = await response.json();
 				window.toastr.success('Invoice added successfully');
 				$('#addInvoiceCloseBtn').trigger('click');
 				setLoading(true);
@@ -272,7 +268,6 @@ const InvoicePage = () => {
 				}
 			);
 			if (response.ok) {
-				const data = await response.json();
 				window.toastr.success('Invoice update successfully');
 				$('#editInvoiceCloseBtn-'+idx).trigger('click');
 				setLoading(true);
@@ -299,7 +294,6 @@ const InvoicePage = () => {
 			);
 
 			if (response.ok) {
-				const data = await response.json();
 				window.toastr.success('Invoice deleted successfully');
 				$('#deleteInvoiceBtn').trigger('click');
 				setLoading(true);

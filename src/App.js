@@ -4,16 +4,14 @@ import InvoicePage from './pages/InvoicePage';
 import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import Template from './Template';
-import { useEffect, useState } from 'react';
+import { useEffect  } from 'react';
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
-import store from './store/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { login, logout, setExpired, setLoading } from './store/reducers/auth';
+import { useDispatch  } from 'react-redux';
+import { login, setExpired, setLoading } from './store/reducers/auth';
 import Register from './pages/RegisterPage';
 
 function App() {
-	const currentUser = useSelector((state) => state.auth.currentUser);
 	const dispatch = useDispatch();
 	useEffect(() => {
 		const savedAccount = localStorage.getItem('account');

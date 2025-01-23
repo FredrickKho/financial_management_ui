@@ -1,8 +1,8 @@
-import { NavLink } from 'react-router-dom';
 import bgImage from '../assets/login-bg.jpg';
 import RegisterCard from '../components/RegisterCard';
 
 const Register = () => {
+	document.title="Nelvonce- Register"
     return (
         <div
 			className="login-page login-bg"
@@ -15,7 +15,7 @@ const Register = () => {
 				zIndex: '0',
 			}}>
 			<div className="login-logo">
-				<h3 className="mb-4 text-center" style={{fontWeight:'50',color:'white'}}>Notance</h3>
+				<h3 className="mb-4 text-center" style={{fontWeight:'50',color:'white'}}>Nelvonce</h3>
 			</div>
 			<div className="login-box">
                 <RegisterCard></RegisterCard>

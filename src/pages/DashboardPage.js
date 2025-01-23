@@ -8,7 +8,6 @@ import {
 	LinearScale,
 	BarElement,
 } from 'chart.js';
-import { $ } from 'jquery';
 import { Bar, Pie } from 'react-chartjs-2';
 ChartJS.register(
 	ArcElement,
@@ -20,6 +19,7 @@ ChartJS.register(
 );
 
 const DashboardPage = () => {
+	document.title="Nelvonce - Dashboard"
 	const [loading, setLoading] = useState(true);
 	const [data, setData] = useState(null);
 	const [spendingInvoice, setSpendingInvoice] = useState(null);
@@ -139,7 +139,6 @@ const DashboardPage = () => {
 					if (item.type === 'Earning')
 						existingCategory.earning += item.totalPrice;
 					else existingCategory.spending += item.totalPrice;
-					console.log(existingCategory);
 				} else {
 					// Otherwise, add a new entry for the category
 					acc.push({
@@ -175,7 +174,7 @@ const DashboardPage = () => {
 	useEffect(() => {
 		if (data && totalPriceSum && invoiceChartSetup && incomeBarChartSetup)
 			setLoading(false);
-	}, [data, totalPriceSum, invoiceChartSetup]);
+	}, [data, totalPriceSum, invoiceChartSetup,incomeBarChartSetup]);
 	useEffect(() => {});
 	if (loading)
 		return (

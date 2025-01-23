@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { login, setExpired } from '../store/reducers/auth';
 import { NavLink, useNavigate } from 'react-router-dom';
-import store from '../store/store';
 const LoginCard = () => {
 	useEffect(() => {
 		const link = document.createElement('link');
