@@ -12,6 +12,7 @@ import { login, setExpired, setLoading } from './store/reducers/auth';
 import Register from './pages/RegisterPage';
 
 function App() {
+	console.log("API URL:", process.env.REACT_APP_API_URL);
 	const dispatch = useDispatch();
 	useEffect(() => {
 		const savedAccount = localStorage.getItem('account');
