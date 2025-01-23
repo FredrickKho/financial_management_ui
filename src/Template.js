@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import store from './store/store';
 import { setTime,setDate, clear } from './store/reducers/ui';
 import { useDispatch,useSelector } from 'react-redux';
 import { logout } from './store/reducers/auth';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Template = ({ Content }) => {
 	const [user,setUser] = useState(null);
@@ -36,7 +35,7 @@ const Template = ({ Content }) => {
 			setLoading(false)
 		}
 	}
-	const checkSession = () => {
+	const checkSession = useCallback(()=>{
 		const currentTime = new Date();
 		const expiredTime = new Date(localStorage.getItem("expiredTime"));
 		// console.log("expired : ",expiredTime)
@@ -50,8 +49,8 @@ const Template = ({ Content }) => {
 			window.toastr.error("Session Timeout")
 			navigate("/")
 		}
-	}
-	const updateTimeAndDate = () => {
+	},[dispatch,navigate]) 
+	const updateTimeAndDate = useCallback(()=>{
 		const now = new Date();
   
 		// Format the date to "Fri, 03 Jan 2025"
@@ -71,14 +70,14 @@ const Template = ({ Content }) => {
 		checkSession()
 		dispatch(setDate(formattedDate));
 		dispatch(setTime(formattedTime));
-	  }
+	  },[dispatch,checkSession]) 
 
 	useEffect(() => {
 		// Update time and date every second
 		const intervalId = setInterval(updateTimeAndDate, 1000);
 		// Cleanup the interval when the component is unmounted
 		return () => clearInterval(intervalId);
-	},[dispatch])
+	},[updateTimeAndDate])
 
 	useEffect(()=>{
 		setLoading(true)

@@ -16,7 +16,6 @@ const RegisterCard = () => {
     })
     const [country,setCountry] = useState(null);
     const [loading,setLoading] = useState(true);
-    const [error,setError] = useState(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const fetchCountry = async () => {
@@ -30,7 +29,7 @@ const RegisterCard = () => {
             const result = await response.json();
             setCountry(result.data);
         } catch (error) {
-			setError(error.message);
+			console.error(error.message);
 		} finally {
 			setLoading(false);
 		}
