@@ -24,7 +24,6 @@ const DashboardPage = () => {
 	const [data, setData] = useState(null);
 	const [spendingInvoice, setSpendingInvoice] = useState(null);
 	const [earningInvoice, setEarningInvoice] = useState(null);
-	const [error, setError] = useState(null);
 	const [totalPriceSum, setTotalPriceSum] = useState(null);
 	const [categoryList, setCategoryList] = useState(null);
 	const [invoiceChartSetup, setInvoiceChartSetup] = useState(null);
@@ -82,7 +81,7 @@ const DashboardPage = () => {
 			result = await response.json();
 			setCategoryList(result.data);
 		} catch (error) {
-			setError(error.message);
+			console.error(error.message);
 		}
 	};
 	useEffect(() => {

@@ -4,13 +4,12 @@ const Header = () => {
 			{/* <!-- Left navbar links --> */}
 			<ul className="navbar-nav">
 				<li className="nav-item">
-					<a
-						className="nav-link"
+					<p
+						className="nav-link m-0"
 						data-widget="pushmenu"
-						href="#"
 						role="button">
 						<i className="fas fa-bars"></i>
-					</a>
+					</p>
 				</li>
 				{/* <li className="nav-item d-none d-sm-inline-block">
 					<a

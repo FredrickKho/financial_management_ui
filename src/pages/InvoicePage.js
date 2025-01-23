@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import $ from 'jquery';
 import DataTable from 'datatables.net-responsive-bs5';
 import 'datatables.net-buttons-bs5';
@@ -12,7 +12,6 @@ const InvoicePage = () => {
 	document.title="Nelvonce - Invoice"
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true); // State for loading status
-	const [error, setError] = useState(null);
 	const [category, setCategory] = useState(null);
 	const [type, setType] = useState(null);
 	const [date, setDate] = useState(null);
@@ -72,7 +71,7 @@ const InvoicePage = () => {
 		};
 	}, []);
 
-	const fetchData = async () => {
+	const fetchData = useCallback(async () => {
 		const url = new URL(
 			`${process.env.REACT_APP_API_URL}/api/item/getAccountItemWithoutPagination`
 		);
@@ -104,18 +103,15 @@ const InvoicePage = () => {
 			// setDataWithoutFilter(result.data);
 			// setPagination(result.pagination);
 		} catch (error) {
-			setError(error.message);
+			console.error(error.message);
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [type, category, startDate, endDate]);
 	useEffect(() => {
 		setLoading(true);
 		fetchData();
-	}, [type, category,startDate,endDate]);
-	useEffect(() => {
-
-	})
+	}, [fetchData]);
 	useEffect(() => {
 		if (categoryList && !$.fn.dataTable.isDataTable('#myTable')) {
 			new DataTable('#myTable', {
